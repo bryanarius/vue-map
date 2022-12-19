@@ -1,6 +1,7 @@
 <script setup>
 import leaflet from 'leaflet';
 import { onMounted, ref } from 'vue';
+import GeoErrorModal from '@/components/GeoErrorModal.vue'
 
 let map;
 onMounted(() => {
@@ -19,7 +20,9 @@ getGeolocation()
 
   const coords = ref(null);
   const fetchCoords = ref(null);
-  const geoMarker = ref(null)
+  const geoMarker = ref(null);
+  const geoError = ref(true)
+  const geoErrorMsg = ref('Testing Vbind on Modal')
 
   const getGeolocation = () => {
     // check session storage for coords
@@ -51,8 +54,9 @@ getGeolocation()
   };
 
   const getLocError = (err) => {
-    console.log(err)
-
+    fetchCoords.value = null;
+    geoError.value = true;
+    geoErrorMsg.value = err.message;
   };
 
   const plotGeolocation = (coords) => {
@@ -72,12 +76,19 @@ getGeolocation()
     return { coords, geoMarker };
   };
 
-  
-   
+  const closeGeoError = () => {
+    geoError.value = null;
+    geoErrorMsg.value = null;
+  };
 </script>
 
 <template>
   <div class="h-screen relative">
+    <GeoErrorModal 
+    @closeGeoError="closeGeoError" 
+    v-if="geoError" 
+    :geoErrorMsg="geoErrorMsg"
+    />
     <div id="map" class="h-full z-[1]"></div>
   </div>
 </template>
