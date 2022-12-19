@@ -22,6 +22,13 @@ getGeolocation()
   const geoMarker = ref(null)
 
   const getGeolocation = () => {
+    // check session storage for coords
+    if (sessionStorage.getItem("coords")) {
+      coords.value = JSON.parse(sessionStorage.getItem("coords"));
+      plotGeolocation(coords.value);
+      return;
+    }
+
     fetchCoords.value = true
     navigator.geolocation.getCurrentPosition(setCoords, getLocError)
   };
