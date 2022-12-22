@@ -2,6 +2,7 @@
 import leaflet from 'leaflet';
 import { onMounted, ref } from 'vue';
 import GeoErrorModal from '@/components/GeoErrorModal.vue'
+import MapFeatures from '@/components/MapFeatures.vue'
 
 let map;
 onMounted(() => {
@@ -21,7 +22,7 @@ getGeolocation()
   const coords = ref(null);
   const fetchCoords = ref(null);
   const geoMarker = ref(null);
-  const geoError = ref(true)
+  const geoError = ref(null)
   const geoErrorMsg = ref('Testing Vbind on Modal')
 
   const getGeolocation = () => {
@@ -79,6 +80,9 @@ getGeolocation()
   const closeGeoError = () => {
     geoError.value = null;
     geoErrorMsg.value = null;
+    console.log('clicked')
+    console.log(geoError.value)
+    console.log( geoErrorMsg.value)
   };
 </script>
 
@@ -88,6 +92,11 @@ getGeolocation()
     @closeGeoError="closeGeoError" 
     v-if="geoError" 
     :geoErrorMsg="geoErrorMsg"
+    />
+    <MapFeatures  
+    :coords="coords" 
+    :fetchCoords="fetchCoords" 
+    @getGeolocation="getGeolocation"
     />
     <div id="map" class="h-full z-[1]"></div>
   </div>

@@ -2,6 +2,8 @@
     export default {
         props: ["geoErrorMsg"]
     }
+
+    
 </script>
 
 <template>
