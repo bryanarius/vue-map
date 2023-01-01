@@ -11,7 +11,9 @@ export default {
 
         <!-- Geolocation -->
         <div 
-         class="px-4 bg-white flex items-center shadow-md rounded-md min-h-[45px]" :class="{ 'bg-slate-600': coords }"
+         class="px-4 bg-white flex items-center shadow-md rounded-md min-h-[45px]" 
+         :class="{ 'bg-slate-600': coords }"
+         @click=""
         >
         <i
             class="fas fa-location-arrow 'text-slate-600' text-[18px]"
