@@ -26,6 +26,13 @@ getGeolocation()
   const geoErrorMsg = ref('Testing Vbind on Modal')
 
   const getGeolocation = () => {
+    if (coords.value) {
+      coords.value = null;
+      sessionStorage.removeItem('coords');
+      map.removeLayer(geoMaker.value);
+      return;
+    }
+
     // check session storage for coords
     if (sessionStorage.getItem("coords")) {
       coords.value = JSON.parse(sessionStorage.getItem("coords"));
@@ -34,7 +41,7 @@ getGeolocation()
     }
 
     fetchCoords.value = true
-    navigator.geolocation.getCurrentPosition(setCoords, getLocError)
+    navigator.geolocation.getCurrentPosition(setCoords, getLocError);
   };
 
   const setCoords = (pos) => {
