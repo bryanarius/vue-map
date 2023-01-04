@@ -20,7 +20,7 @@ getGeolocation()
   })
 
   const coords = ref(null);
-  const fetchCoords = ref(true);
+  const fetchCoords = ref(null);
   const geoMarker = ref(null);
   const geoError = ref(null)
   const geoErrorMsg = ref('Testing Vbind on Modal')
