@@ -1,17 +1,22 @@
 <script>
 import {ref} from 'vue'
 import axios from "axios"
-export default {
-    props: ["coords", "fetchCoords"],
+import LoadingSpinner from './LoadingSpinner.vue'
 
-    setup() {
+export default {
+    props: ["coords", "fetchCoords", "searchResults"],
+    components: {LoadingSpinner},
+
+    setup(props) {
         const searchQuery = ref(null);
         const searchData = ref(null);
         const queryTimeout = ref(null);
+        const selectedResult = ref(null)
 
         const search = () => {
             clearTimeout(queryTimeout.value);
 
+            searchData.value = null;
             queryTimeout.value = setTimeout(async () => {
                 if (searchQuery.value !== "") {
                     const params = new URLSearchParams({
@@ -29,7 +34,25 @@ export default {
             }, 750);
         };
 
-        return {searchQuery, searchData, queryTimeout, search};
+        const selectResult = (result) => {
+            selectResult.value = result;
+            emit('plotResult', result.geometry);
+        };
+
+        const removeResult = () => {
+            selectedResult.value = null;
+            emit("removeResult")
+        }
+
+        return {
+            searchQuery,
+            searchData, 
+            queryTimeout, 
+            search, 
+            selectResult, 
+            selectedResult,
+            removeResult
+         };
     },
 };
 
@@ -48,6 +71,7 @@ export default {
                 placeholder="Start your search"
                 v-model="searchQuery"
                 @input="search"
+                @focus="$emit(toggleSearchResults)"
             />
             <!-- Search Icon -->
             <div class="absolute top-0 left-[8px] h-full flex items-center">
@@ -56,11 +80,32 @@ export default {
             <!-- Search Results -->
             <div class="absolute mt-2 w-full">
                 <!-- Results -->
-                <div class="h-[200px] overflow-scroll bg-white rounded-md">
-                    <div class="px-4 py-2 flex gap-x-2 cursor-pointer hover:bg-slate-600 hover:text-white">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <p class="text-sm">Testing Result</p>
+                <div v-if="searchQuery && searchResults" 
+                class="h-[200px] overflow-scroll bg-white rounded-md"
+                >
+                    <!-- Loading -->
+                    <LoadingSpinner v-if="!searchData" />
+                    <div v-else>
+                        <div 
+                        class="px-4 py-2 flex gap-x-2 cursor-pointer hover:bg-slate-600 hover:text-white"
+                        v-for="(result, index) in searchData"
+                        :key="index"
+                        @click="selectResult(result)"
+                        >
+                    
+                            <i class="fas fa-map-marker-alt"></i>
+                            <p class="text-sm">{{ result.place_name_en }}</p>
+                        </div>
                     </div>
+                </div>
+                <!-- Selected Search Result -->
+                <div v-if="selectedResult" class="mt-2 px-4 py-3 bg-white rounded-md">
+                    <i @click="" class="far fa-times-circle flex justify-end"></i>
+                    <h1 class="text-lg">{{ selectedResult.text }}</h1>
+                    <p class="text-xs mb-1">
+                        {{ selectedResult.properties.address }}, {{ selectedResult.city }}, {{ selectedResult.state }}
+                    </p>
+                    <p class="text-xs">{{ selectedResult.properties.category }}</p>
                 </div>
             </div>
         </div>

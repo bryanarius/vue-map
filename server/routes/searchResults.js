@@ -8,14 +8,29 @@ router.get('/:query', async (req, res) => {
         // add api key & query strings
         const params = new URLSearchParams ({
             access_token: process.env.API_KEY,
-            ...url.parse(req.url, true). query,
+            ...url.parse(req.url, true).query,
         });
+        // getting query param from req
+        
         const query = req.params.query;
         const results = await axios(
             `https://api.mapbox.com/geocoding/v5/mapbox.places/${query}.json?${params}`
             );
-            const data = results.data;
-            res.status(200).json(data);
+
+            // format data to include city and state
+        results.data.features.forEach((item) => {
+        item.context.forEach((type) => {
+          if (type.id.includes("place")) {
+            item.city = item.text;
+          }
+          if (type.id.includes("region")) {
+            item.state = item.text;
+          }
+        });
+      });
+
+        const data = results.data;
+         res.status(200).json(data);
     } catch(err) {
         res.status(500).json({ error: err.message});
     }

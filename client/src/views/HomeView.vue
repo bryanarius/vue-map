@@ -14,10 +14,14 @@ onMounted(() => {
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}).addTo(map);
+  }).addTo(map);
 
-getGeolocation()
+  map.on('moveend', () => {
+    closeSearchResults()
   })
+
+  getGeolocation()
+});
 
   const coords = ref(null);
   const fetchCoords = ref(null);
@@ -79,7 +83,7 @@ getGeolocation()
     geoMarker.value = leaflet.marker([coords.lat, coords.lng]).addTo(map);
 
     // set map view to current location
-    map.setView(coords.lat, coords.lng)
+    map.setView([coords.lat, coords.lng], 10)
 
     return { coords, geoMarker };
   };
@@ -91,6 +95,44 @@ getGeolocation()
     console.log(geoError.value)
     console.log( geoErrorMsg.value)
   };
+
+  const resultMarker = ref(null);
+
+  const plotResult = (coords) => {
+    //Check to see if resultMarker has value 
+    if (resultMarker.value) {
+      map.removeLayer(resultMarker.value);
+    }
+
+      // create custom marker
+      const customMarker = leaflet.icon({
+      iconUrl:('../assets/map-marker-red.png'),
+      iconSize: [35,35]
+    });
+
+    // create new marker with coords and custom icon 
+
+    resultMarker.value = leaflet.marker([coords.coordinates[1], coords.coordinates[0]]).addTo(map);
+
+    // set map view to current location
+    map.setView(coords.coordinates[1], coords.coordinates[0], 14)
+
+    closeSearchResults();
+  }
+
+  const searchResults = ref(null)
+
+  const toggleSearchResults = () => {
+    searchResults.value = !searchResults.value;
+  };
+
+  const closeSearchResults = () => {
+    searchResults.value = null;
+  };
+
+  const removeResult = () => {
+    map.removeLayer(resultMarker.value)
+  };
 </script>
 
 <template>
@@ -101,9 +143,13 @@ getGeolocation()
     :geoErrorMsg="geoErrorMsg"
     />
     <MapFeatures  
+    @getGeolocation="getGeolocation"
+    @plotResult="plotResult"
+    @toggleSearchResults="toggleSearchResults"
+    @removeResult="removeResult"
     :coords="coords" 
     :fetchCoords="fetchCoords" 
-    @getGeolocation="getGeolocation"
+    :searchResults="searchResults"
     />
     <div id="map" class="h-full z-[1]"></div>
   </div>
