@@ -111,7 +111,6 @@ export default {
         </div>
 
         <!-- Geolocation -->
-        <!-- Geolocation -->
         <div 
          class="px-4 bg-white flex items-center shadow-md rounded-md min-h-[45px]" 
          :class="{ 'bg-slate-600': coords }"
