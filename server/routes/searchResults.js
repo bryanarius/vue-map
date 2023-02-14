@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router();
-const { default: axios } = require("axios");
+const axios = require("axios");
 const url = require('url')
 
 router.get('/:query', async (req, res) => {

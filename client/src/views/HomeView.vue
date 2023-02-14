@@ -115,7 +115,7 @@ onMounted(() => {
     resultMarker.value = leaflet.marker([coords.coordinates[1], coords.coordinates[0]]).addTo(map);
 
     // set map view to current location
-    map.setView(coords.coordinates[1], coords.coordinates[0], 14)
+    map.setView([coords.coordinates[1], coords.coordinates[0]], 14)
 
     closeSearchResults();
   }
